@@ -1,0 +1,2029 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODO GAS SYR S.A.S - Sistema Profesional</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <!-- html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-bg: #f8f9fa;
+            --dark-text: #2c3e50;
+            --light-text: #ecf0f1;
+            --border-radius: 10px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+        }
+
+        .container {
+            flex: 1;
+            max-width: 1400px;
+            padding: 2rem;
+        }
+
+        /* Encabezado */
+        .company-header {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2.5rem;
+            box-shadow: var(--box-shadow);
+            border: none;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        .company-header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        }
+
+        .company-header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(52, 152, 219, 0.1) 0%, rgba(52, 152, 219, 0) 70%);
+            z-index: 0;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-img {
+            height: 120px;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+            transition: var(--transition);
+        }
+
+        .logo-img:hover {
+            transform: translateY(-5px);
+        }
+
+        .logo-text {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .logo-text h2 {
+            margin: 0;
+            font-weight: 800;
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            /* Prefijo para Safari/Chrome antiguos */
+            background-clip: text;
+            /* Versión estándar */
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-text p {
+            margin: 0.5rem 0;
+            font-size: 1.1rem;
+            color: #7f8c8d;
+        }
+
+        .tagline {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-top: 1rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            font-size: 1rem;
+            color: var(--primary-color);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Pestañas */
+        .nav-tabs {
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 2.5rem;
+        }
+
+        .nav-tabs .nav-link {
+            color: #7f8c8d;
+            font-weight: 600;
+            padding: 1.2rem 2.5rem;
+            border: none;
+            position: relative;
+            transition: var(--transition);
+            font-size: 1.05rem;
+            border-radius: 0;
+            margin-right: 0.5rem;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--secondary-color);
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--secondary-color);
+            background-color: transparent;
+            font-weight: 700;
+        }
+
+        .nav-tabs .nav-link.active::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+            border-radius: 4px 4px 0 0;
+        }
+
+        /* Secciones */
+        .form-section {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2.5rem;
+            box-shadow: var(--box-shadow);
+            border: none;
+            animation: fadeIn 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--secondary-color), var(--primary-color));
+        }
+
+        .form-section h4 {
+            color: var(--primary-color);
+            margin-bottom: 1.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.4rem;
+        }
+
+        .form-section h4 i {
+            font-size: 1.6rem;
+            color: var(--secondary-color);
+        }
+
+        /* Tarjetas */
+        .summary-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2.5rem;
+            box-shadow: var(--box-shadow);
+            border-left: 5px solid var(--secondary-color);
+            animation: fadeIn 0.6s ease-out;
+            position: relative;
+        }
+
+        .summary-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 1.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.4rem;
+        }
+
+        .summary-card h4 i {
+            color: var(--secondary-color);
+        }
+
+        .summary-item {
+            padding: 1.25rem;
+            border-radius: 8px;
+            background-color: #ffffff;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .summary-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border-color: rgba(52, 152, 219, 0.2);
+        }
+
+        .summary-item strong {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Tablas */
+        .result-table {
+            margin-top: 2.5rem;
+            border-radius: var(--border-radius);
+            overflow-x: auto;
+            box-shadow: var(--box-shadow);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            width: 100%;
+        }
+
+        .result-table table {
+            min-width: 1200px;
+            width: 100%;
+            margin-bottom: 0;
+        }
+
+        .result-table th {
+            background: linear-gradient(90deg, var(--primary-color) 0%, #2a3f54 100%);
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+        }
+
+        .result-table td {
+            padding: 0.75rem;
+            vertical-align: middle;
+            text-align: center;
+            transition: var(--transition);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .result-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .approved-row {
+            background-color: rgba(39, 174, 96, 0.05);
+            border-left: 4px solid var(--success-color);
+        }
+
+        .rejected-row {
+            background-color: rgba(231, 76, 60, 0.05);
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .editing-row {
+            background-color: rgba(243, 156, 18, 0.08);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .status-approved {
+            background-color: rgba(39, 174, 96, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-rejected {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--danger-color);
+        }
+
+        /* Botones de acción */
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .action-buttons .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        /* Gráficos */
+        .chart-container {
+            height: 500px;
+            margin-top: 2.5rem;
+            width: 100%;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            border: none;
+            animation: fadeIn 0.6s ease-out;
+            position: relative;
+        }
+
+        .chart-container h4 {
+            color: var(--primary-color);
+            margin-bottom: 1.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.4rem;
+        }
+
+        .chart-container h4 i {
+            color: var(--secondary-color);
+        }
+
+        canvas#pressureChart {
+            max-height: 420px;
+            width: 100% !important;
+        }
+
+        /* Botones */
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #2980b9 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.8rem 1.75rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary-custom:hover {
+            background: linear-gradient(135deg, #2980b9 0%, var(--secondary-color) 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(52, 152, 219, 0.4);
+            color: white;
+        }
+
+        .btn-primary-custom:active {
+            transform: translateY(1px);
+        }
+
+        .btn-outline-custom {
+            border: 2px solid var(--secondary-color);
+            color: var(--secondary-color);
+            font-weight: 600;
+            padding: 0.8rem 1.75rem;
+            border-radius: 8px;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1rem;
+            background-color: transparent;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-outline-custom:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.1);
+        }
+
+        .btn-outline-danger {
+            border: 2px solid var(--danger-color);
+            color: var(--danger-color);
+            font-weight: 600;
+            padding: 0.8rem 1.75rem;
+            border-radius: 8px;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1rem;
+            background-color: transparent;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-outline-danger:hover {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--danger-color);
+            border-color: var(--danger-color);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.1);
+        }
+
+        /* Alertas */
+        .alert {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            z-index: 9999;
+            max-width: 400px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            padding: 1.5rem 2rem;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: var(--transition);
+            font-weight: 500;
+            backdrop-filter: blur(5px);
+            background-color: rgba(255, 255, 255, 0.95);
+            border-left: 5px solid;
+        }
+
+        .alert.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .alert i {
+            font-size: 1.8rem;
+        }
+
+        .alert-success {
+            color: var(--success-color);
+            border-left-color: var(--success-color);
+        }
+
+        .alert-danger {
+            color: var(--danger-color);
+            border-left-color: var(--danger-color);
+        }
+
+        .alert-warning {
+            color: var(--warning-color);
+            border-left-color: var(--warning-color);
+        }
+
+        .alert-info {
+            color: var(--secondary-color);
+            border-left-color: var(--secondary-color);
+        }
+
+        /* Footer */
+        .footer {
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            margin-top: 4rem;
+            padding: 2.5rem 0;
+            border-top: 1px solid #e2e8f0;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            text-align: center;
+        }
+
+        .footer a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+
+        .footer a:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        /* Formularios */
+        .form-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .form-control,
+        .form-select {
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            transition: var(--transition);
+            font-size: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        }
+
+        .pi-field {
+            background-color: #f0f4f8;
+            cursor: not-allowed;
+        }
+
+        .invalid-feedback {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        /* Modal */
+        .modal-content {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-bottom: none;
+        }
+
+        .modal-title {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .modal-body {
+            padding: 2rem;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-close-white {
+            filter: invert(1) brightness(100%);
+        }
+
+        /* Animaciones */
+        @keyframes slideIn {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Efectos hover */
+        .hover-scale {
+            transition: var(--transition);
+        }
+
+        .hover-scale:hover {
+            transform: scale(1.02);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            .form-section,
+            .summary-card {
+                padding: 2rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .logo-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .logo-text {
+                min-width: auto;
+            }
+
+            .nav-tabs .nav-link {
+                padding: 1rem 1.5rem;
+                font-size: 1rem;
+            }
+
+            .btn-primary-custom,
+            .btn-outline-custom {
+                padding: 0.75rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            .form-section,
+            .summary-card {
+                padding: 1.75rem;
+            }
+
+            .chart-container {
+                padding: 1.75rem;
+                height: 400px;
+            }
+
+            .result-table th,
+            .result-table td {
+                padding: 0.6rem;
+                font-size: 0.8rem;
+            }
+
+            .alert {
+                max-width: 90%;
+                right: 5%;
+                padding: 1.25rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .company-header {
+                padding: 1.75rem;
+            }
+
+            .form-section,
+            .summary-card {
+                padding: 1.5rem;
+            }
+
+            .btn-primary-custom,
+            .btn-outline-custom,
+            .btn-outline-danger {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 0.5rem;
+            }
+
+            .logo-img {
+                height: 100px;
+            }
+
+            .logo-text h2 {
+                font-size: 2rem;
+            }
+
+            .nav-tabs .nav-link {
+                padding: 0.8rem 1rem;
+                font-size: 0.95rem;
+            }
+
+            .form-control,
+            .form-select {
+                padding: 0.85rem 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container py-4">
+        <!-- Encabezado -->
+        <div class="company-header hover-scale">
+            <div class="logo-container">
+                <img src="assets/images/Logo 2025.png" alt="Logo TODO GAS SYR S.A.S" class="logo-img">
+                <div class="logo-text">
+                    <h2>TODO GAS SYR S.A.S</h2>
+                    <p>Especialistas en redes de gas residenciales e industriales</p>
+                    <p>NIT: 901.126.243-3</p>
+                    <span class="tagline">
+                        <i class="fas fa-certificate"></i> Sistema Profesional de Cálculo de Redes de Gas
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pestañas -->
+        <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="client-tab" data-bs-toggle="tab" data-bs-target="#client"
+                    type="button" role="tab" aria-controls="client" aria-selected="true">
+                    <i class="fas fa-user-tie me-2"></i> Datos del Cliente
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="calculation-tab" data-bs-toggle="tab" data-bs-target="#calculation"
+                    type="button" role="tab" aria-controls="calculation" aria-selected="false">
+                    <i class="fas fa-calculator me-2"></i> Cálculos Técnicos
+                </button>
+            </li>
+        </ul>
+        <!-- Contenido de pestañas -->
+        <div class="tab-content" id="mainTabsContent">
+            <!-- Pestaña Cliente -->
+            <div class="tab-pane fade show active" id="client" role="tabpanel" aria-labelledby="client-tab">
+                <div class="form-section hover-scale">
+                    <h4><i class="fas fa-user-edit"></i> Información del Cliente</h4>
+                    <form id="clientForm" class="row g-3">
+                        <div class="col-md-6">
+                            <label for="clientType" class="form-label">
+                                <i class="fas fa-id-card"></i> Tipo de Identificación
+                            </label>
+                            <select class="form-select" id="clientType">
+                                <option value="" selected>Seleccione...</option>
+                                <option value="CC">Cédula de Ciudadanía</option>
+                                <option value="CE">Cédula de Extranjería</option>
+                                <option value="NIT">NIT</option>
+                                <option value="TI">Tarjeta de Identidad</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="clientId" class="form-label">
+                                <i class="fas fa-id-badge"></i> Número de Identificación
+                            </label>
+                            <input type="text" class="form-control" id="clientId" maxlength="15">
+                        </div>
+                        <div class="col-md-8">
+                            <label for="clientName" class="form-label">
+                                <i class="fas fa-signature"></i> Nombre Completo
+                            </label>
+                            <input type="text" class="form-control" id="clientName" maxlength="100">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="clientPhone" class="form-label">
+                                <i class="fas fa-phone"></i> Teléfono
+                            </label>
+                            <input type="tel" class="form-control" id="clientPhone" maxlength="15">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="clientAddress" class="form-label">
+                                <i class="fas fa-map-marker-alt"></i> Dirección
+                            </label>
+                            <input type="text" class="form-control" id="clientAddress" maxlength="150">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="clientCity" class="form-label">
+                                <i class="fas fa-city"></i> Municipio/Ciudad
+                            </label>
+                            <input type="text" class="form-control" id="clientCity" maxlength="50">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="clientDepartment" class="form-label">
+                                <i class="fas fa-globe-americas"></i> Departamento
+                            </label>
+                            <input type="text" class="form-control" id="clientDepartment" maxlength="50">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="clientEmail" class="form-label">
+                                <i class="fas fa-envelope"></i> Correo Electrónico
+                            </label>
+                            <input type="email" class="form-control" id="clientEmail" maxlength="100">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="projectType" class="form-label">
+                                <i class="fas fa-project-diagram"></i> Tipo de Proyecto
+                            </label>
+                            <select class="form-select" id="projectType">
+                                <option value="" selected>Seleccione...</option>
+                                <option value="Residencial">Residencial</option>
+                                <option value="Comercial">Comercial</option>
+                                <option value="Industrial">Industrial</option>
+                                <option value="Institucional">Institucional</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="gasType" class="form-label">
+                                <i class="fas fa-fire"></i> Tipo de Gas
+                            </label>
+                            <select class="form-select" id="gasType">
+                                <option value="" selected>Seleccione...</option>
+                                <option value="GN">Gas Natural</option>
+                                <option value="GLP">Gas Licuado (GLP)</option>
+                            </select>
+                        </div>
+                        <!-- NUEVO CAMPO: Nivel de Presión -->
+                        <div class="col-md-4">
+                            <label for="pressureLevel" class="form-label">
+                                <i class="fas fa-tachometer-alt"></i> Nivel de Presión
+                            </label>
+                            <select class="form-select" id="pressureLevel">
+                                <option value="baja">Baja Presión</option>
+                                <option value="media">Media Presión</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            <button type="button" id="saveClientBtn" class="btn btn-primary-custom me-2">
+                                <i class="fas fa-save"></i> Guardar Datos
+                            </button>
+                            <button type="button" id="clearClientBtn" class="btn btn-outline-custom">
+                                <i class="fas fa-eraser"></i> Limpiar Formulario
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Resumen del Cliente -->
+                <div class="summary-card hover-scale" id="clientSummary" style="display: none;">
+                    <h4><i class="fas fa-clipboard-check"></i> Resumen del Cliente</h4>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="summary-item">
+                                <strong><i class="fas fa-id-card"></i> Identificación:</strong> <span
+                                    id="sumClientId"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="summary-item">
+                                <strong><i class="fas fa-signature"></i> Nombre:</strong> <span
+                                    id="sumClientName"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="summary-item">
+                                <strong><i class="fas fa-phone"></i> Teléfono:</strong> <span
+                                    id="sumClientPhone"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="summary-item">
+                                <strong><i class="fas fa-map-marker-alt"></i> Dirección:</strong> <span
+                                    id="sumClientAddress"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="summary-item">
+                                <strong><i class="fas fa-city"></i> Municipio:</strong> <span id="sumClientCity"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="summary-item">
+                                <strong><i class="fas fa-globe-americas"></i> Departamento:</strong> <span
+                                    id="sumClientDepartment"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="summary-item">
+                                <strong><i class="fas fa-project-diagram"></i> Tipo de Proyecto:</strong> <span
+                                    id="sumProjectType"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="summary-item">
+                                <strong><i class="fas fa-fire"></i> Tipo de Gas:</strong> <span id="sumGasType"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="summary-item">
+                                <strong><i class="fas fa-envelope"></i> Correo:</strong> <span
+                                    id="sumClientEmail"></span>
+                            </div>
+                        </div>
+                        <!-- NUEVO RESUMEN: Nivel de Presión -->
+                        <div class="col-md-4">
+                            <div class="summary-item">
+                                <strong><i class="fas fa-tachometer-alt"></i> Nivel de Presión:</strong> <span
+                                    id="sumPressureLevel"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Pestaña Cálculos -->
+        <div class="tab-pane fade" id="calculation" role="tabpanel" aria-labelledby="calculation-tab">
+            <div class="summary-card hover-scale" id="summarySection" style="display: none;">
+                <h4><i class="fas fa-chart-line"></i> Resumen Técnico</h4>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="summary-item">
+                            <strong><i class="fas fa-tachometer-alt"></i> Presión inicial:</strong> <span
+                                id="summaryPi">0.00</span> mbar
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="summary-item">
+                            <strong><i class="fas fa-tachometer-alt"></i> Presión final:</strong> <span
+                                id="summaryPf">0.00</span> mbar
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="summary-item">
+                            <strong><i class="fas fa-percentage"></i> Pérdida total:</strong> <span
+                                id="summaryDeltaP">0.00</span> mbar (<span id="summaryPercent">0.00</span>%)
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="summary-item">
+                            <strong><i class="fas fa-bolt"></i> Velocidad máxima:</strong> <span
+                                id="summaryMaxVel">0.00</span> m/s
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="summary-item">
+                            <strong><i class="fas fa-check-circle"></i> Tramos aprobados:</strong> <span
+                                id="summaryApproved">0</span>/<span id="summaryTotal">0</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="summary-item">
+                            <strong><i class="fas fa-clipboard-list"></i> Estado general:</strong> <span
+                                id="summaryStatus" class="fw-bold">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-section hover-scale">
+                <h4><i class="fas fa-ruler-combined"></i> Parámetros del Tramo</h4>
+                <form id="segmentForm" class="row g-3">
+                    <div class="col-md-2 col-sm-6">
+                        <label for="inicio" class="form-label">
+                            <i class="fas fa-play"></i> Inicio
+                        </label>
+                        <input type="text" class="form-control" id="inicio" pattern="[A-Za-z0-9'_-]+" maxlength="20">
+                    </div>
+                    <div class="col-md-2 col-sm-6">
+                        <label for="fin" class="form-label">
+                            <i class="fas fa-stop"></i> Fin
+                        </label>
+                        <input type="text" class="form-control" id="fin" pattern="[A-Za-z0-9'_-]+" maxlength="20">
+                    </div>
+                    <div class="col-md-2 col-sm-6">
+                        <label for="caudal" class="form-label">
+                            <i class="fas fa-tint"></i> Caudal (m³/h)
+                        </label>
+                        <input type="number" step="0.01" min="0.01" max="1000" class="form-control" id="caudal">
+                    </div>
+                    <div class="col-md-2 col-sm-6">
+                        <label for="longitud" class="form-label">
+                            <i class="fas fa-ruler-horizontal"></i> Longitud (m)
+                        </label>
+                        <input type="number" step="0.01" min="0.01" max="10000" class="form-control" id="longitud">
+                    </div>
+                    <div class="col-md-2 col-sm-6">
+                        <label for="diametro" class="form-label">
+                            <i class="fas fa-circle"></i> Diámetro (mm)
+                        </label>
+                        <input type="number" step="0.01" min="0.05" max="1000" class="form-control" id="diametro">
+                    </div>
+                    <div class="col-md-2 col-sm-6">
+                        <label for="pi" class="form-label">
+                            <i class="fas fa-tachometer-alt"></i> Pi (mbar)
+                        </label>
+                        <input type="number" step="0.01" min="0.01" max="10000" class="form-control" id="pi">
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <label for="material" class="form-label">
+                            <i class="fas fa-hammer"></i> Material
+                        </label>
+                        <select id="material" class="form-select">
+                            <option value="PE AL PE">PE AL PE</option>
+                            <option value="Cobre">Cobre</option>
+                            <option value="Acero">Acero</option>
+                        </select>
+                    </div>
+                    <div class="col-md-9 col-sm-12 d-flex flex-wrap align-items-end gap-2">
+                        <button type="button" id="addBtn" class="btn btn-primary-custom">
+                            <i class="fas fa-plus-circle"></i> Agregar Tramo
+                        </button>
+                        <button type="button" id="calculateBtn" class="btn btn-primary-custom">
+                            <i class="fas fa-calculator"></i> Calcular Red
+                        </button>
+                        <button type="button" id="clearAllBtn" class="btn btn-outline-custom">
+                            <i class="fas fa-trash-alt"></i> Limpiar Todo
+                        </button>
+                        <button type="button" id="exportPdfBtn" class="btn btn-primary-custom">
+                            <i class="fas fa-file-pdf"></i> Exportar a PDF
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="table-responsive result-table hover-scale">
+                <table class="table table-bordered table-hover" id="resultsTable">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-play"></i> Inicio</th>
+                            <th><i class="fas fa-stop"></i> Fin</th>
+                            <th><i class="fas fa-tint"></i> Caudal (m³/h)</th>
+                            <th><i class="fas fa-ruler-horizontal"></i> Longitud (m)</th>
+                            <th><i class="fas fa-ruler-combined"></i> LE (m)</th>
+                            <th><i class="fas fa-circle"></i> Diámetro (mm)</th>
+                            <th><i class="fas fa-tachometer-alt"></i> Pi (mbar)</th>
+                            <th><i class="fas fa-percentage"></i> Pérdida (mbar)</th>
+                            <th><i class="fas fa-tachometer-alt"></i> Pf (mbar)</th>
+                            <th><i class="fas fa-bolt"></i> Velocidad (m/s)</th>
+                            <th><i class="fas fa-hammer"></i> Material</th>
+                            <th><i class="fas fa-clipboard-check"></i> Estado</th>
+                            <th><i class="fas fa-cog"></i> Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="chart-container hover-scale">
+                <h4><i class="fas fa-chart-bar"></i> Gráfico de Presión y Velocidad</h4>
+                <canvas id="pressureChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="text-center">
+            <div><i class="fas fa-user-tie"></i> Diseñado por: <a href="luissilvestre70@gmail.com">Luis Silvestre
+
+                </a></div>
+            <div><i class="fas fa-id-card"></i> CC 1.012.427.712 | <i class="fas fa-graduation-cap"></i> Registro
+                Escuela de Ingenieria
+            </div>
+            <div><i class="fas fa-code-branch"></i> Versión 2.0.0</div>
+            <div class="mt-2">© 2025 TODO GAS SYR S.A.S. Todos los derechos reservados.</div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Modal de Confirmación -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-question-circle me-2"></i> Confirmación</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="confirmModalBody">
+                    ¿Está seguro de realizar esta acción?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary-custom" id="confirmModalBtn">
+                        <i class="fas fa-check"></i> Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alertas -->
+    <div class="alert" id="alertBox" style="display: none;">
+        <i class="fas fa-info-circle" id="alertIcon"></i>
+        <span id="alertMessage"></span>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Variables globales
+        const { jsPDF } = window.jspdf;
+        let segments = [];
+        let pressureChart = null;
+        let editingIndex = -1;
+        let nextPiValue = null;
+        let currentClient = null;
+        const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+        const nodePressures = new Map();
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('saveClientBtn').addEventListener('click', saveClientData);
+            document.getElementById('clearClientBtn').addEventListener('click', clearClientForm);
+            document.getElementById('addBtn').addEventListener('click', addSegment);
+            document.getElementById('calculateBtn').addEventListener('click', calculateNetwork);
+            document.getElementById('clearAllBtn').addEventListener('click', clearAll);
+            document.getElementById('exportPdfBtn').addEventListener('click', exportToPDF);
+
+            document.querySelectorAll('button[data-bs-toggle="tab"]').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    new bootstrap.Tab(tab).show();
+                });
+            });
+
+            loadClientData();
+            loadSegments();
+            updatePiField();
+            calculateNetwork();
+        });
+
+        // Funciones de Cliente
+        function saveClientData() {
+            currentClient = {
+                type: document.getElementById('clientType').value || 'No especificado',
+                id: document.getElementById('clientId').value.trim() || 'No especificado',
+                name: document.getElementById('clientName').value.trim() || 'No especificado',
+                address: document.getElementById('clientAddress').value.trim() || 'No especificado',
+                city: document.getElementById('clientCity').value.trim() || 'No especificado',
+                department: document.getElementById('clientDepartment').value.trim() || 'No especificado',
+                phone: document.getElementById('clientPhone').value.trim() || 'No especificado',
+                email: document.getElementById('clientEmail').value.trim() || '',
+                projectType: document.getElementById('projectType').value || 'No especificado',
+                gasType: document.getElementById('gasType').value || 'No especificado',
+                pressureLevel: document.getElementById('pressureLevel').value || 'baja', // NUEVO
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                localStorage.setItem('currentGasClient', JSON.stringify(currentClient));
+                updateClientSummary();
+                showAlert('Datos del cliente guardados correctamente', 'success');
+                new bootstrap.Tab(document.getElementById('calculation-tab')).show();
+            } catch (error) {
+                console.error('Error al guardar cliente:', error);
+                showAlert('Error al guardar los datos del cliente', 'danger');
+            }
+        }
+
+
+        function loadClientData() {
+            try {
+                const savedClient = localStorage.getItem('currentGasClient');
+                if (savedClient) {
+                    currentClient = JSON.parse(savedClient);
+                    document.getElementById('clientType').value = currentClient.type;
+                    document.getElementById('clientId').value = currentClient.id;
+                    document.getElementById('clientName').value = currentClient.name;
+                    document.getElementById('clientAddress').value = currentClient.address;
+                    document.getElementById('clientCity').value = currentClient.city;
+                    document.getElementById('clientDepartment').value = currentClient.department;
+                    document.getElementById('clientPhone').value = currentClient.phone;
+                    document.getElementById('clientEmail').value = currentClient.email;
+                    document.getElementById('projectType').value = currentClient.projectType;
+                    document.getElementById('gasType').value = currentClient.gasType;
+                    updateClientSummary();
+                }
+            } catch (error) {
+                console.error('Error al cargar datos del cliente:', error);
+                showAlert('Error al cargar los datos del cliente', 'danger');
+            }
+        }
+
+        function updateClientSummary() {
+            if (!currentClient) {
+                document.getElementById('clientSummary').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('sumClientId').textContent = `${currentClient.type}: ${currentClient.id}`;
+            document.getElementById('sumClientName').textContent = currentClient.name;
+            document.getElementById('sumClientPhone').textContent = currentClient.phone;
+            document.getElementById('sumClientAddress').textContent = currentClient.address;
+            document.getElementById('sumClientCity').textContent = currentClient.city;
+            document.getElementById('sumClientDepartment').textContent = currentClient.department;
+            document.getElementById('sumProjectType').textContent = currentClient.projectType;
+            document.getElementById('sumGasType').textContent = currentClient.gasType;
+            document.getElementById('sumClientEmail').textContent = currentClient.email || 'No especificado';
+            document.getElementById('clientSummary').style.display = 'block';
+        }
+
+        function clearClientForm() {
+            showConfirm('¿Está seguro de limpiar los datos del cliente?', () => {
+                document.getElementById('clientForm').reset();
+                currentClient = null;
+                localStorage.removeItem('currentGasClient');
+                document.getElementById('clientSummary').style.display = 'none';
+                showAlert('Formulario de cliente limpiado', 'info');
+            });
+        }
+
+        // Funciones de Cálculo
+        function loadSegments() {
+            try {
+                const savedSegments = localStorage.getItem('gasSegments');
+                if (savedSegments) {
+                    segments = JSON.parse(savedSegments);
+                    calculateNetwork();
+                }
+            } catch (error) {
+                console.error('Error al cargar tramos:', error);
+                showAlert('Error al cargar los tramos', 'danger');
+            }
+        }
+
+        function saveSegments() {
+            try {
+                localStorage.setItem('gasSegments', JSON.stringify(segments));
+            } catch (error) {
+                console.error('Error al guardar tramos:', error);
+                showAlert('Error al guardar los tramos', 'danger');
+            }
+        }
+
+        function sanitizeNodeName(name) {
+            return name.replace(/[<>&"']/g, '').toUpperCase().trim();
+        }
+
+        function validateSegment(segment) {
+            if (!segment.inicio) segment.inicio = 'Nodo' + (segments.length + 1);
+            if (!segment.fin) segment.fin = 'Nodo' + (segments.length + 2);
+            if (!segment.caudal || segment.caudal <= 0) segment.caudal = 1.0;
+            if (!segment.longitud || segment.longitud < 0.01) segment.longitud = 1.0;
+            if (!segment.diametro || segment.diametro < 0.05) segment.diametro = 10.0;
+            if (!segment.pi || segment.pi <= 0) segment.pi = 25.0;
+
+            const nodeRegex = /^[A-Za-z0-9'_-]+$/;
+            if (!nodeRegex.test(segment.inicio)) segment.inicio = 'Nodo' + (segments.length + 1);
+            if (!nodeRegex.test(segment.fin)) segment.fin = 'Nodo' + (segments.length + 2);
+
+            return segment;
+        }
+
+        function validateNetwork(segments) {
+            if (segments.length === 0) return { valid: true };
+
+            const nodes = new Set();
+            const edges = new Set();
+
+            segments.forEach(s => {
+                nodes.add(s.inicio);
+                nodes.add(s.fin);
+                edges.add(`${s.inicio}-${s.fin}`);
+            });
+
+            const reachable = new Set([segments[0].inicio]);
+            let changed = true;
+
+            while (changed) {
+                changed = false;
+                segments.forEach(s => {
+                    if (reachable.has(s.inicio)) {
+                        if (!reachable.has(s.fin)) {
+                            reachable.add(s.fin);
+                            changed = true;
+                        }
+                    }
+                });
+            }
+
+            if (reachable.size !== nodes.size) {
+                return { valid: false, message: 'La red contiene nodos desconectados' };
+            }
+            return { valid: true };
+        }
+
+        function calculateLE(longitud) {
+            return parseFloat((longitud * 1.2).toFixed(2));
+        }
+
+        function calculatePressureLoss(caudal, le, diametro) {
+            if (diametro <= 0 || le <= 0 || caudal < 0) return 0;
+            const C = 23200; // Constante empírica para mbar, m³/h, m, mm
+            const deltaP = C * 0.67 * caudal * Math.pow(le, 1.82) * Math.pow(diametro, -4.82);
+            return parseFloat(deltaP.toFixed(4));
+        }
+
+
+        function calculateVelocity(caudal, diametro) {
+            if (diametro <= 0 || caudal < 0) return 0; // validación segura
+
+            const d_m = diametro / 1000; // mm → m
+            const area = Math.PI * Math.pow(d_m, 2) / 4;
+            const velocidad = (caudal / 3600) / area; // m³/h → m³/s
+            return parseFloat(velocidad.toFixed(2));
+        }
+
+
+        function checkSegmentStatus({ velocidad, deltaP, pi, caudal, longitud, diametro }) {
+            const tipo = currentClient?.pressureLevel || 'baja';
+
+            const limites = {
+                baja: { velocidadMax: 6, perdidaMaxPorcentual: 0.10 },
+                media: { velocidadMax: 10, perdidaMaxPorcentual: 0.20 }
+            };
+
+            const { velocidadMax, perdidaMaxPorcentual } = limites[tipo];
+
+            const esTramoMuyCorto = longitud <= 0.3; // 30 cm o menos
+            const diametrosEstandar = [12, 16, 20, 25, 32, 40, 50];
+            const diametroRedondeado = Math.round(diametro);
+            const esDiametroValido = diametrosEstandar.includes(diametroRedondeado);
+
+            const velocidadPermitida = esTramoMuyCorto ? velocidadMax * 1.4 : velocidadMax;
+            const aprobado = esDiametroValido && velocidad <= velocidadPermitida && deltaP <= (perdidaMaxPorcentual * pi);
+
+            return aprobado
+                ? {
+                    status: '<span class="status-badge status-approved"><i class="fas fa-check-circle"></i> Aprobado</span>',
+                    class: "approved-row"
+                }
+                : {
+                    status: '<span class="status-badge status-rejected"><i class="fas fa-times-circle"></i> Rechazado</span>',
+                    class: "rejected-row"
+                };
+        }
+
+        // FUNCIÓN PARA MOSTRAR ADVERTENCIA SI EL DIÁMETRO NO ES ESTÁNDAR
+        function validateDiameter(diametro) {
+            const diametrosEstandar = [12, 16, 20, 25, 32, 40, 50];
+            const diametroRedondeado = Math.round(diametro);
+            return diametrosEstandar.includes(diametroRedondeado);
+        }
+
+
+
+        function updatePiField() {
+            const piField = document.getElementById('pi');
+            if (segments.length === 0 || editingIndex === 0) {
+                piField.readOnly = false;
+                piField.classList.remove('pi-field');
+                if (editingIndex !== 0 && !piField.value) {
+                    piField.value = '';
+                }
+            } else {
+                piField.readOnly = true;
+                piField.classList.add('pi-field');
+                piField.value = nextPiValue ? nextPiValue.toFixed(2) : '';
+            }
+        }
+
+        function addSegment() {
+            const diametro = parseFloat(document.getElementById('diametro').value);
+            const diametrosEstandar = [12, 16, 20, 25, 32, 40, 50];
+            const diametroRedondeado = Math.round(diametro);
+
+            // Validación flexible y segura
+            if (!diametrosEstandar.includes(diametroRedondeado)) {
+                showAlert('⚠️ Diámetro no estándar. Usa: 12, 16, 20, 25, 32, 40 o 50 mm.', 'danger');
+                return;
+            }
+
+            const segment = validateSegment({
+                inicio: sanitizeNodeName(document.getElementById('inicio').value),
+                fin: sanitizeNodeName(document.getElementById('fin').value),
+                caudal: parseFloat(document.getElementById('caudal').value),
+                longitud: parseFloat(document.getElementById('longitud').value),
+                diametro: diametro,
+                pi: parseFloat(document.getElementById('pi').value),
+                material: document.getElementById('material').value || 'PE AL PE'
+            });
+
+            if (editingIndex >= 0) {
+                segments[editingIndex] = segment;
+                showAlert('Tramo actualizado correctamente', 'success');
+                editingIndex = -1;
+                document.getElementById('addBtn').innerHTML = '<i class="fas fa-plus-circle"></i> Agregar Tramo';
+            } else {
+                segments.push(segment);
+                showAlert('Tramo agregado correctamente', 'success');
+            }
+
+            saveSegments();
+            clearForm();
+            calculateNetwork();
+        }
+
+
+        function clearForm() {
+            document.getElementById('segmentForm').reset();
+            document.getElementById('addBtn').innerHTML = '<i class="fas fa-plus-circle"></i> Agregar Tramo';
+            editingIndex = -1;
+            updatePiField();
+            document.getElementById('inicio').focus();
+        }
+
+        function clearAll() {
+            showConfirm('¿Está seguro de eliminar todos los datos, incluyendo cliente y cálculos?', () => {
+                segments = [];
+                nextPiValue = null;
+                currentClient = null;
+                localStorage.removeItem('currentGasClient');
+                localStorage.removeItem('gasSegments');
+                document.getElementById('clientForm').reset();
+                document.getElementById('clientSummary').style.display = 'none';
+                document.querySelector('#resultsTable tbody').innerHTML = '';
+                document.getElementById('summarySection').style.display = 'none';
+                if (pressureChart) {
+                    pressureChart.destroy();
+                    pressureChart = null;
+                }
+                clearForm();
+                showAlert('Todos los datos han sido eliminados', 'info');
+            });
+        }
+
+        function editSegment(index) {
+            const segment = segments[index];
+            editingIndex = index;
+            document.getElementById('inicio').value = segment.inicio;
+            document.getElementById('fin').value = segment.fin;
+            document.getElementById('caudal').value = segment.caudal;
+            document.getElementById('longitud').value = segment.longitud;
+            document.getElementById('diametro').value = segment.diametro;
+            document.getElementById('pi').value = segment.pi;
+            document.getElementById('material').value = segment.material;
+            document.getElementById('addBtn').innerHTML = '<i class="fas fa-save"></i> Guardar Cambios';
+            document.querySelectorAll('#resultsTable tbody tr').forEach(row => row.classList.remove('editing-row'));
+            document.querySelector(`#resultsTable tbody tr:nth-child(${index + 1})`)?.classList.add('editing-row');
+            updatePiField();
+            document.getElementById('inicio').focus();
+        }
+
+        function deleteSegment(index) {
+            showConfirm('¿Está seguro de eliminar este tramo?', () => {
+                segments.splice(index, 1);
+                saveSegments();
+                if (segments.length > 0) {
+                    const lastSegment = segments[segments.length - 1];
+                    const le = calculateLE(lastSegment.longitud);
+                    const deltaP = calculatePressureLoss(lastSegment.caudal, le, lastSegment.diametro);
+                    nextPiValue = lastSegment.pi - deltaP;
+                } else {
+                    nextPiValue = null;
+                }
+                calculateNetwork();
+                showAlert('Tramo eliminado correctamente', 'info');
+            });
+        }
+
+        function topologicalSort(segments) {
+            const graph = new Map();
+            const inDegree = new Map();
+
+            segments.forEach(s => {
+                if (!graph.has(s.inicio)) graph.set(s.inicio, []);
+                graph.get(s.inicio).push(s.fin);
+                inDegree.set(s.fin, (inDegree.get(s.fin) || 0) + 1);
+                if (!inDegree.has(s.inicio)) inDegree.set(s.inicio, 0);
+            });
+
+            const queue = [];
+            inDegree.forEach((degree, node) => {
+                if (degree === 0) queue.push(node);
+            });
+
+            const sortedNodes = [];
+            while (queue.length) {
+                const node = queue.shift();
+                sortedNodes.push(node);
+                if (graph.has(node)) {
+                    graph.get(node).forEach(neighbor => {
+                        inDegree.set(neighbor, inDegree.get(neighbor) - 1);
+                        if (inDegree.get(neighbor) === 0) queue.push(neighbor);
+                    });
+                }
+            }
+
+            if (sortedNodes.length !== inDegree.size) {
+                throw new Error('La red contiene un ciclo');
+            }
+
+            return segments.sort((a, b) => sortedNodes.indexOf(a.inicio) - sortedNodes.indexOf(b.inicio));
+        }
+
+        function renderTable() {
+            const tbody = document.querySelector('#resultsTable tbody');
+            tbody.innerHTML = '';
+
+            segments.forEach((segment, index) => {
+                const le = calculateLE(segment.longitud);
+                const deltaP = calculatePressureLoss(segment.caudal, le, segment.diametro);
+                const pf = (nodePressures.get(segment.fin) || (segment.pi - deltaP)).toFixed(2);
+                const velocidad = calculateVelocity(segment.caudal, segment.diametro, segment.pi);
+                const status = checkSegmentStatus({
+                    velocidad,
+                    deltaP,
+                    pi: segment.pi,
+                    caudal: segment.caudal,
+                    longitud: segment.longitud,
+                    diametro: segment.diametro
+                });
+
+
+                const tr = document.createElement('tr');
+                tr.className = status.class;
+                if (index === editingIndex) tr.classList.add('editing-row');
+
+                tr.innerHTML = `
+                    <td>${segment.inicio}</td>
+                    <td>${segment.fin}</td>
+                    <td>${segment.caudal.toFixed(2)}</td>
+                    <td>${segment.longitud.toFixed(2)}</td>
+                    <td>${le.toFixed(2)}</td>
+                    <td>${segment.diametro.toFixed(2)}</td>
+                    <td>${segment.pi.toFixed(2)}</td>
+                    <td>${deltaP.toFixed(4)}</td>
+                    <td>${pf}</td>
+                    <td>${velocidad.toFixed(2)}</td>
+                    <td>${segment.material}</td>
+                    <td>${status.status}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-outline-custom" onclick="editSegment(${index})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteSegment(${index})">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function calculateNetwork() {
+            const tbody = document.querySelector('#resultsTable tbody');
+            tbody.innerHTML = '';
+            nodePressures.clear();
+            document.getElementById('summarySection').style.display = segments.length ? 'block' : 'none';
+
+            if (segments.length === 0) {
+                if (pressureChart) {
+                    pressureChart.destroy();
+                    pressureChart = null;
+                }
+                return;
+            }
+
+            const validation = validateNetwork(segments);
+            if (!validation.valid) {
+                showAlert(validation.message, 'danger');
+                return;
+            }
+
+            let sortedSegments;
+            try {
+                sortedSegments = topologicalSort([...segments]);
+            } catch (error) {
+                showAlert(error.message, 'danger');
+                return;
+            }
+
+            if (sortedSegments.length) {
+                nodePressures.set(sortedSegments[0].inicio, sortedSegments[0].pi);
+            }
+
+            const chartData = { labels: [], pressures: [], velocities: [] };
+            let totalDeltaP = 0;
+            let maxVelocity = 0;
+            let approvedCount = 0;
+            const initialPressure = sortedSegments[0]?.pi || 0;
+
+            sortedSegments.forEach((segment, index) => {
+                const initialNodePressure = nodePressures.get(segment.inicio) || segment.pi;
+                const le = calculateLE(segment.longitud);
+                const deltaP = calculatePressureLoss(segment.caudal, le, segment.diametro);
+                const pf = initialNodePressure - deltaP;
+                const velocidad = calculateVelocity(segment.caudal, segment.diametro, initialNodePressure);
+                const status = checkSegmentStatus({
+                    velocidad,
+                    deltaP,
+                    pi: initialNodePressure,
+                    caudal: segment.caudal,
+                    longitud: segment.longitud,
+                    diametro: segment.diametro
+                });
+
+
+                totalDeltaP += deltaP;
+                maxVelocity = Math.max(maxVelocity, velocidad);
+                if (status.class === "approved-row") approvedCount++;
+
+                nodePressures.set(segment.fin, pf);
+                chartData.labels.push(`${segment.inicio}-${segment.fin}`);
+                chartData.pressures.push(pf);
+                chartData.velocities.push(velocidad);
+            });
+
+            renderTable();
+
+            const finalPressure = sortedSegments.length ? nodePressures.get(sortedSegments[sortedSegments.length - 1].fin) : 0;
+            document.getElementById('summaryPi').textContent = initialPressure.toFixed(2);
+            document.getElementById('summaryPf').textContent = finalPressure.toFixed(2);
+            document.getElementById('summaryDeltaP').textContent = totalDeltaP.toFixed(2);
+            document.getElementById('summaryPercent').textContent = initialPressure ? ((totalDeltaP / initialPressure) * 100).toFixed(2) : '0.00';
+            document.getElementById('summaryMaxVel').textContent = maxVelocity.toFixed(2);
+            document.getElementById('summaryApproved').textContent = approvedCount;
+            document.getElementById('summaryTotal').textContent = segments.length;
+            document.getElementById('summaryStatus').innerHTML = approvedCount === segments.length ?
+                '<span class="status-badge status-approved"><i class="fas fa-check-circle"></i> APROBADO</span>' :
+                '<span class="status-badge status-rejected"><i class="fas fa-times-circle"></i> REQUIERE AJUSTES</span>';
+
+            if (segments.length) {
+                nextPiValue = finalPressure;
+                updatePiField();
+            }
+
+            updateChart(chartData);
+        }
+
+        function updateChart(data) {
+            const ctx = document.getElementById('pressureChart').getContext('2d');
+            if (pressureChart) {
+                pressureChart.destroy();
+            }
+
+            pressureChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Presión (mbar)',
+                            data: data.pressures,
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            borderWidth: 3,
+                            yAxisID: 'y',
+                            tension: 0.3,
+                            pointBackgroundColor: '#e74c3c',
+                            pointRadius: 5,
+                            pointHoverRadius: 8,
+                            borderJoinStyle: 'round'
+                        },
+                        {
+                            label: 'Velocidad (m/s)',
+                            data: data.velocities,
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderWidth: 3,
+                            yAxisID: 'y1',
+                            tension: 0.3,
+                            pointBackgroundColor: '#3498db',
+                            pointRadius: 5,
+                            pointHoverRadius: 8,
+                            borderJoinStyle: 'round'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Perfil de Presión y Velocidad',
+                            font: { size: 18, weight: 'bold' },
+                            padding: { top: 10, bottom: 20 },
+                            color: '#2c3e50'
+                        },
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                font: { size: 13 }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(44, 62, 80, 0.95)',
+                            titleFont: { size: 14, weight: 'bold', color: '#fff' },
+                            bodyFont: { size: 12, color: '#ecf0f1' },
+                            padding: 12,
+                            usePointStyle: true,
+                            callbacks: {
+                                label: (context) => `${context.dataset.label}: ${context.parsed.y.toFixed(2)}`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Presión (mbar)',
+                                font: { size: 14, weight: 'bold' },
+                                color: '#2c3e50'
+                            },
+                            min: data.pressures.length ? Math.max(0, Math.min(...data.pressures) - 5) : 0,
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Velocidad (m/s)',
+                                font: { size: 14, weight: 'bold' },
+                                color: '#2c3e50'
+                            },
+                            min: 0,
+                            max: data.velocities.length ? Math.max(10, Math.max(...data.velocities) + 2) : 12,
+                            grid: { drawOnChartArea: false }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Tramos',
+                                font: { size: 14, weight: 'bold' },
+                                color: '#2c3e50'
+                            },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function exportToPDF() {
+            if (!currentClient) {
+                showAlert('Complete los datos del cliente primero', 'warning');
+                new bootstrap.Tab(document.getElementById('client-tab')).show();
+                return;
+            }
+
+            if (segments.length === 0) {
+                showAlert('No hay datos de tramos para exportar', 'warning');
+                return;
+            }
+
+            showAlert('Generando informe PDF profesional...', 'info');
+
+            try {
+                const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                const margin = 10;
+                let yPos = margin;
+
+                // Encabezado
+                doc.setFillColor(44, 62, 80);
+                doc.rect(0, 0, pageWidth, 20, 'F');
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(14);
+                doc.setTextColor(255);
+                doc.text('TODO GAS SYR S.A.S', margin, 12);
+                doc.setFontSize(10);
+                doc.text('Informe Técnico - Diseño de Red de Gas', pageWidth / 2, 8, { align: 'center' });
+                doc.text('NIT: 901.126.243-3', pageWidth / 2, 13, { align: 'center' });
+                doc.text(`Fecha: ${new Date().toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })}`, pageWidth - margin, 12, { align: 'right' });
+
+                // Datos del cliente
+                yPos += 18;
+                doc.setFontSize(12);
+                doc.setTextColor(0);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Datos del Cliente', margin, yPos);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(10);
+                const clientData = [
+                    [`Nombre: ${currentClient.name}`, `Identificación: ${currentClient.type} ${currentClient.id}`],
+                    [`Dirección: ${currentClient.address}`, `Teléfono: ${currentClient.phone}`],
+                    [`Municipio: ${currentClient.city}`, `Correo: ${currentClient.email || 'N/A'}`],
+                    [`Departamento: ${currentClient.department}`, `Proyecto: ${currentClient.projectType}`],
+                    [`Tipo de Gas: ${currentClient.gasType}`, `Nivel de Presión: ${currentClient.pressureLevel === 'media' ? 'Media Presión' : 'Baja Presión'}`]
+                ];
+                let clientY = yPos + 6;
+                clientData.forEach(row => {
+                    doc.text(row[0], margin, clientY);
+                    if (row[1]) doc.text(row[1], pageWidth / 2, clientY);
+                    clientY += 6;
+                });
+
+                // Resumen técnico
+                yPos = clientY + 10;
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Resumen Técnico del Diseño', margin, yPos);
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+
+                // Función segura para obtener texto desde el DOM
+                const getText = (id) => {
+                    const el = document.getElementById(id);
+                    return el ? el.textContent.trim() : 'N/A';
+                };
+
+                // Determinar estado general
+                const estadoGeneral = getText('summaryStatus').toUpperCase().includes('APROBADO') ? 'APROBADO' : 'REQUIERE AJUSTES';
+
+                // Tipo de red (formato visual)
+                const tipoRed = currentClient.pressureLevel === 'media' ? 'Media Presión' : 'Baja Presión';
+
+                // Datos para mostrar
+                const summaryData = [
+                    [`Tipo de Red: ${tipoRed}`, ''],
+                    [`Presión inicial: ${getText('summaryPi')} mbar`, `Presión final: ${getText('summaryPf')} mbar`],
+                    [`Pérdida total: ${getText('summaryDeltaP')} mbar (${getText('summaryPercent')}%)`, `Velocidad máxima: ${getText('summaryMaxVel')} m/s`],
+                    [`Tramos aprobados: ${getText('summaryApproved')}/${getText('summaryTotal')}`, `Estado general: ${estadoGeneral}`]
+                ];
+
+                let summaryY = yPos + 7;
+                summaryData.forEach(row => {
+                    doc.text(row[0], margin, summaryY);
+                    if (row[1]) doc.text(row[1], pageWidth / 2, summaryY);
+                    summaryY += 6;
+                });
+
+
+                // Tabla técnica de tramos
+                yPos = summaryY + 10;
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Detalle de Tramos Analizados', margin, yPos);
+
+                const headers = ['Inicio', 'Fin', 'Caudal (m³/h)', 'Longitud (m)', 'LE (m)', 'Diámetro (mm)', 'Pi (mbar)', 'ΔP (mbar)', 'Pf (mbar)', 'Velocidad (m/s)', 'Material', 'Estado'];
+                const rows = segments.map(s => {
+                    const le = calculateLE(s.longitud);
+                    const deltaP = calculatePressureLoss(s.caudal, le, s.diametro);
+                    const pf = nodePressures.get(s.fin) || (s.pi - deltaP);
+                    const velocidad = calculateVelocity(s.caudal, s.diametro);
+
+                    const tipo = currentClient?.pressureLevel || 'baja';
+                    const limites = {
+                        baja: { velocidadMax: 6, perdidaMaxPorcentual: 0.1 },
+                        media: { velocidadMax: 10, perdidaMaxPorcentual: 0.2 }
+                    };
+                    const { velocidadMax, perdidaMaxPorcentual } = limites[tipo];
+                    const estado = velocidad <= velocidadMax && deltaP <= (perdidaMaxPorcentual * s.pi) ? 'Aprobado' : 'Rechazado';
+
+                    return [
+                        s.inicio,
+                        s.fin,
+                        s.caudal.toFixed(2),
+                        s.longitud.toFixed(2),
+                        le.toFixed(2),
+                        s.diametro.toFixed(2),
+                        s.pi.toFixed(2),
+                        deltaP.toFixed(4),
+                        pf.toFixed(2),
+                        velocidad.toFixed(2),
+                        s.material,
+                        estado
+                    ];
+                });
+
+                doc.autoTable({
+                    startY: yPos + 5,
+                    head: [headers],
+                    body: rows,
+                    margin: { left: margin, right: margin },
+                    styles: {
+                        fontSize: 8,
+                        cellPadding: 2.5,
+                        halign: 'center',
+                        valign: 'middle'
+                    },
+                    headStyles: {
+                        fillColor: [44, 62, 80],
+                        textColor: 255,
+                        fontStyle: 'bold'
+                    },
+                    alternateRowStyles: {
+                        fillColor: [245, 245, 245]
+                    },
+                    didDrawPage: (data) => {
+                        doc.setFontSize(8);
+                        doc.setTextColor(100);
+                        doc.text(`Página ${doc.internal.getNumberOfPages()}`, pageWidth - margin, pageHeight - 5, { align: 'right' });
+                    }
+                });
+
+                // Gráfico de presión
+                const canvas = document.getElementById('pressureChart');
+                const chartImg = await html2canvas(canvas, {
+                    scale: 3,
+                    logging: false,
+                    useCORS: true,
+                    backgroundColor: '#ffffff'
+                });
+
+                const imgData = chartImg.toDataURL('image/png');
+                const imgWidth = pageWidth - 2 * margin;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                const currentY = doc.lastAutoTable.finalY + 10;
+
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Gráfico de Presión y Velocidad', margin, currentY);
+
+                if (currentY + imgHeight + 20 > pageHeight) {
+                    doc.addPage();
+                    doc.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight * 0.7);
+                } else {
+                    doc.addImage(imgData, 'PNG', margin, currentY + 5, imgWidth, imgHeight * 0.7);
+                }
+
+                // Pie de página
+                doc.setFontSize(9);
+                doc.setTextColor(100);
+                doc.setDrawColor(200);
+                doc.line(margin, pageHeight - 20, pageWidth - margin, pageHeight - 20);
+                doc.text('Diseñado por: Luis Silvestre - Ingeniero Desarrollador ', margin, pageHeight - 15);
+                doc.text('CC 1.012.427.712 |  Ingeniero Sistemas', margin, pageHeight - 10);
+                doc.text(`Versión 2.0.0 | Generado el: ${new Date().toLocaleString('es-CO')}`, margin, pageHeight - 5);
+
+                const fileName = `Informe_Tecnico_${currentClient.name.replace(/[^a-z0-9]/gi, '_')}_${Date.now()}.pdf`;
+                doc.save(fileName);
+                showAlert('Informe PDF generado con éxito', 'success');
+            } catch (error) {
+                console.error('Error al generar PDF:', error);
+                showAlert('Error al generar el informe PDF', 'danger');
+            }
+        }
+
+        function showAlert(message, type) {
+            const alertBox = document.getElementById('alertBox');
+            const alertIcon = document.getElementById('alertIcon');
+            const alertMessage = document.getElementById('alertMessage');
+
+            alertBox.className = 'alert';
+            alertBox.classList.add(`alert-${type}`);
+
+            const icons = {
+                'success': 'fa-check-circle',
+                'danger': 'fa-exclamation-circle',
+                'warning': 'fa-exclamation-triangle',
+                'info': 'fa-info-circle'
+            };
+            alertIcon.className = `fas ${icons[type]}`;
+
+            alertMessage.textContent = message;
+            alertBox.style.display = 'flex';
+            alertBox.classList.add('show');
+
+            setTimeout(() => {
+                alertBox.classList.remove('show');
+                setTimeout(() => {
+                    alertBox.style.display = 'none';
+                }, 300);
+            }, 5000);
+        }
+
+        function showConfirm(message, callback) {
+            document.getElementById('confirmModalBody').textContent = message;
+            const confirmBtn = document.getElementById('confirmModalBtn');
+            confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+            document.getElementById('confirmModalBtn').onclick = () => {
+                confirmModal.hide();
+                callback();
+            };
+            confirmModal.show();
+        }
+    </script>
+</body>
+
+</html>
