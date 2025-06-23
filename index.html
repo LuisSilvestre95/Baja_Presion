@@ -1296,6 +1296,19 @@
             return segment;
         }
 
+        function validarPresionInicial(pi, tipo) {
+            if (tipo === 'baja' && pi > 30) {
+                showAlert('⚠️ En redes de baja presión, la presión inicial no debe superar los 30 mbar. Usa "media presión" si estás trabajando con valores mayores.', 'danger');
+                return false;
+            }
+            if (tipo === 'media' && pi < 100) {
+                showAlert('⚠️ En redes de media presión, la presión inicial debe ser al menos 100 mbar. Usa "baja presión" si estás diseñando con presiones menores.', 'danger');
+                return false;
+            }
+            return true;
+        }
+
+
         function validateNetwork(segments) {
             if (segments.length === 0) return { valid: true };
 
@@ -1409,11 +1422,15 @@
             const diametrosEstandar = [12, 16, 20, 25, 32, 40, 50];
             const diametroRedondeado = Math.round(diametro);
 
-            // Validación flexible y segura
             if (!diametrosEstandar.includes(diametroRedondeado)) {
                 showAlert('⚠️ Diámetro no estándar. Usa: 12, 16, 20, 25, 32, 40 o 50 mm.', 'danger');
                 return;
             }
+
+            const pi = parseFloat(document.getElementById('pi').value);
+            const tipo = document.getElementById('pressureLevel').value;
+
+            if (!validarPresionInicial(pi, tipo)) return;
 
             const segment = validateSegment({
                 inicio: sanitizeNodeName(document.getElementById('inicio').value),
@@ -1421,7 +1438,7 @@
                 caudal: parseFloat(document.getElementById('caudal').value),
                 longitud: parseFloat(document.getElementById('longitud').value),
                 diametro: diametro,
-                pi: parseFloat(document.getElementById('pi').value),
+                pi: pi,
                 material: document.getElementById('material').value || 'PE AL PE'
             });
 
@@ -1439,6 +1456,7 @@
             clearForm();
             calculateNetwork();
         }
+
 
 
         function clearForm() {
@@ -1809,77 +1827,78 @@
                 const margin = 10;
                 let yPos = margin;
 
-                // Encabezado
+                // LOGO DE LA EMPRESA
+                const logo = new Image();
+                logo.src = "assets/images/Logo 2025.png";
+                await new Promise(resolve => {
+                    logo.onload = resolve;
+                    setTimeout(resolve, 2000); // respaldo por si falla la carga
+                });
+
+                doc.addImage(logo, 'PNG', margin, 5, 30, 12);
+
+                // CABECERA CON FONDO OSCURO
                 doc.setFillColor(44, 62, 80);
                 doc.rect(0, 0, pageWidth, 20, 'F');
-                doc.setFont('helvetica', 'bold');
-                doc.setFontSize(14);
                 doc.setTextColor(255);
-                doc.text('TODO GAS SYR S.A.S', margin, 12);
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(16);
+                doc.text('TODO GAS SYR S.A.S', pageWidth / 2, 10, { align: 'center' });
                 doc.setFontSize(10);
-                doc.text('Informe Técnico - Diseño de Red de Gas', pageWidth / 2, 8, { align: 'center' });
-                doc.text('NIT: 901.126.243-3', pageWidth / 2, 13, { align: 'center' });
-                doc.text(`Fecha: ${new Date().toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })}`, pageWidth - margin, 12, { align: 'right' });
+                doc.text('NIT: 901.126.243-3 | Informe Técnico de Diseño de Red de Gas', pageWidth / 2, 15, { align: 'center' });
 
-                // Datos del cliente
-                yPos += 18;
-                doc.setFontSize(12);
+                yPos += 25;
                 doc.setTextColor(0);
+
+                // DATOS DEL CLIENTE
+                doc.setFontSize(12);
                 doc.setFont('helvetica', 'bold');
                 doc.text('Datos del Cliente', margin, yPos);
-                doc.setFont('helvetica', 'normal');
-                doc.setFontSize(10);
+
+                const getText = id => document.getElementById(id)?.textContent?.trim() || 'N/A';
+                const tipoRed = currentClient.pressureLevel === 'media' ? 'Media Presión' : 'Baja Presión';
+                const estadoGeneral = getText('summaryStatus').toUpperCase().includes('APROBADO') ? 'APROBADO' : 'REQUIERE AJUSTES';
+
                 const clientData = [
                     [`Nombre: ${currentClient.name}`, `Identificación: ${currentClient.type} ${currentClient.id}`],
                     [`Dirección: ${currentClient.address}`, `Teléfono: ${currentClient.phone}`],
                     [`Municipio: ${currentClient.city}`, `Correo: ${currentClient.email || 'N/A'}`],
                     [`Departamento: ${currentClient.department}`, `Proyecto: ${currentClient.projectType}`],
-                    [`Tipo de Gas: ${currentClient.gasType}`, `Nivel de Presión: ${currentClient.pressureLevel === 'media' ? 'Media Presión' : 'Baja Presión'}`]
+                    [`Tipo de Gas: ${currentClient.gasType}`, `Nivel de Presión: ${tipoRed}`]
                 ];
-                let clientY = yPos + 6;
+
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(10);
+                let clientY = yPos + 7;
                 clientData.forEach(row => {
                     doc.text(row[0], margin, clientY);
-                    if (row[1]) doc.text(row[1], pageWidth / 2, clientY);
+                    doc.text(row[1], pageWidth / 2, clientY);
                     clientY += 6;
                 });
 
-                // Resumen técnico
+                // RESUMEN TÉCNICO
                 yPos = clientY + 10;
                 doc.setFontSize(12);
                 doc.setFont('helvetica', 'bold');
                 doc.text('Resumen Técnico del Diseño', margin, yPos);
-                doc.setFontSize(10);
-                doc.setFont('helvetica', 'normal');
 
-                // Función segura para obtener texto desde el DOM
-                const getText = (id) => {
-                    const el = document.getElementById(id);
-                    return el ? el.textContent.trim() : 'N/A';
-                };
-
-                // Determinar estado general
-                const estadoGeneral = getText('summaryStatus').toUpperCase().includes('APROBADO') ? 'APROBADO' : 'REQUIERE AJUSTES';
-
-                // Tipo de red (formato visual)
-                const tipoRed = currentClient.pressureLevel === 'media' ? 'Media Presión' : 'Baja Presión';
-
-                // Datos para mostrar
-                const summaryData = [
+                const resumen = [
                     [`Tipo de Red: ${tipoRed}`, ''],
                     [`Presión inicial: ${getText('summaryPi')} mbar`, `Presión final: ${getText('summaryPf')} mbar`],
                     [`Pérdida total: ${getText('summaryDeltaP')} mbar (${getText('summaryPercent')}%)`, `Velocidad máxima: ${getText('summaryMaxVel')} m/s`],
                     [`Tramos aprobados: ${getText('summaryApproved')}/${getText('summaryTotal')}`, `Estado general: ${estadoGeneral}`]
                 ];
 
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(10);
                 let summaryY = yPos + 7;
-                summaryData.forEach(row => {
+                resumen.forEach(row => {
                     doc.text(row[0], margin, summaryY);
                     if (row[1]) doc.text(row[1], pageWidth / 2, summaryY);
                     summaryY += 6;
                 });
 
-
-                // Tabla técnica de tramos
+                // TABLA DE TRAMOS
                 yPos = summaryY + 10;
                 doc.setFontSize(12);
                 doc.setFont('helvetica', 'bold');
@@ -1890,14 +1909,11 @@
                     const le = calculateLE(s.longitud);
                     const deltaP = calculatePressureLoss(s.caudal, le, s.diametro);
                     const pf = nodePressures.get(s.fin) || (s.pi - deltaP);
-                    const velocidad = calculateVelocity(s.caudal, s.diametro);
-
+                    const velocidad = calculateVelocity(s.caudal, s.diametro, s.pi);
                     const tipo = currentClient?.pressureLevel || 'baja';
-                    const limites = {
-                        baja: { velocidadMax: 6, perdidaMaxPorcentual: 0.1 },
-                        media: { velocidadMax: 10, perdidaMaxPorcentual: 0.2 }
-                    };
-                    const { velocidadMax, perdidaMaxPorcentual } = limites[tipo];
+                    const { velocidadMax, perdidaMaxPorcentual } = tipo === 'media'
+                        ? { velocidadMax: 10, perdidaMaxPorcentual: 0.2 }
+                        : { velocidadMax: 6, perdidaMaxPorcentual: 0.1 };
                     const estado = velocidad <= velocidadMax && deltaP <= (perdidaMaxPorcentual * s.pi) ? 'Aprobado' : 'Rechazado';
 
                     return [
@@ -1934,19 +1950,13 @@
                     },
                     alternateRowStyles: {
                         fillColor: [245, 245, 245]
-                    },
-                    didDrawPage: (data) => {
-                        doc.setFontSize(8);
-                        doc.setTextColor(100);
-                        doc.text(`Página ${doc.internal.getNumberOfPages()}`, pageWidth - margin, pageHeight - 5, { align: 'right' });
                     }
                 });
 
-                // Gráfico de presión
+                // GRÁFICA
                 const canvas = document.getElementById('pressureChart');
                 const chartImg = await html2canvas(canvas, {
                     scale: 3,
-                    logging: false,
                     useCORS: true,
                     backgroundColor: '#ffffff'
                 });
@@ -1960,20 +1970,19 @@
                 doc.setFont('helvetica', 'bold');
                 doc.text('Gráfico de Presión y Velocidad', margin, currentY);
 
-                if (currentY + imgHeight + 20 > pageHeight) {
+                if (currentY + imgHeight + 30 > pageHeight) {
                     doc.addPage();
                     doc.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight * 0.7);
                 } else {
                     doc.addImage(imgData, 'PNG', margin, currentY + 5, imgWidth, imgHeight * 0.7);
                 }
 
-                // Pie de página
+                // FOOTER
                 doc.setFontSize(9);
                 doc.setTextColor(100);
-                doc.setDrawColor(200);
                 doc.line(margin, pageHeight - 20, pageWidth - margin, pageHeight - 20);
-                doc.text('Diseñado por: Luis Silvestre - Ingeniero Desarrollador ', margin, pageHeight - 15);
-                doc.text('CC 1.012.427.712 |  Ingeniero Sistemas', margin, pageHeight - 10);
+                doc.text('Diseñado por: Luis Silvestre', margin, pageHeight - 15);
+                doc.text(' Ingeniero Desarrollador - Ingeniero de Sistemas', margin, pageHeight - 10);
                 doc.text(`Versión 2.0.0 | Generado el: ${new Date().toLocaleString('es-CO')}`, margin, pageHeight - 5);
 
                 const fileName = `Informe_Tecnico_${currentClient.name.replace(/[^a-z0-9]/gi, '_')}_${Date.now()}.pdf`;
@@ -1984,6 +1993,7 @@
                 showAlert('Error al generar el informe PDF', 'danger');
             }
         }
+
 
         function showAlert(message, type) {
             const alertBox = document.getElementById('alertBox');
